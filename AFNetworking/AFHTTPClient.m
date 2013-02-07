@@ -1081,10 +1081,11 @@ NSTimeInterval const kAFUploadStream3GSuggestedDelay = 0.2;
 #pragma mark -
 
 typedef enum {
-    AFEncapsulationBoundaryPhase = 1,
-    AFHeaderPhase                = 2,
-    AFBodyPhase                  = 3,
-    AFFinalBoundaryPhase         = 4,
+    AFInitialPhase,
+    AFEncapsulationBoundaryPhase,
+    AFHeaderPhase,
+    AFBodyPhase,
+    AFFinalBoundaryPhase,
 } AFHTTPBodyPartReadPhase;
 
 @interface AFHTTPBodyPart () <NSCopying> {
@@ -1244,9 +1245,10 @@ typedef enum {
         return YES;
     }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wcovered-switch-default"
     switch (_phase) {
+        case AFInitialPhase:
+            _phase = AFEncapsulationBoundaryPhase;
+            break;
         case AFEncapsulationBoundaryPhase:
             _phase = AFHeaderPhase;
             break;
@@ -1260,12 +1262,9 @@ typedef enum {
             _phase = AFFinalBoundaryPhase;
             break;
         case AFFinalBoundaryPhase:
-        default:
-            _phase = AFEncapsulationBoundaryPhase;
-            break;
+            return NO;
     }
     _phaseReadOffset = 0;
-#pragma clang diagnostic pop
 
     return YES;
 }
