@@ -128,13 +128,18 @@ typedef enum {
  */
 @property (readonly, nonatomic, strong) NSOperationQueue *operationQueue;
 
+#ifdef _SYSTEMCONFIGURATION_H
 /**
  The reachability status from the device to the current `baseURL` of the `AFHTTPClient`.
 
  @warning This property requires the `SystemConfiguration` framework. Add it in the active target's "Link Binary With Library" build phase, and add `#import <SystemConfiguration/SystemConfiguration.h>` to the header prefix of the project (`Prefix.pch`).
  */
-#ifdef _SYSTEMCONFIGURATION_H
 @property (readonly, nonatomic, assign) AFNetworkReachabilityStatus networkReachabilityStatus;
+
+/**
+ 
+ */
+@property (nonatomic, assign) BOOL automaticallySetCachePolicyFromNetworkReachabilityStatus;
 #endif
 
 ///---------------------------------------------

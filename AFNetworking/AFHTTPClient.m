@@ -211,6 +211,7 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
 @synthesize networkReachability = _networkReachability;
 @synthesize networkReachabilityStatus = _networkReachabilityStatus;
 @synthesize networkReachabilityStatusBlock = _networkReachabilityStatusBlock;
+@synthesize automaticallySetCachePolicyFromNetworkReachabilityStatus = _automaticallySetCachePolicyFromNetworkReachabilityStatus;
 #endif
 
 + (instancetype)clientWithBaseURL:(NSURL *)url {
@@ -443,6 +444,12 @@ static void AFNetworkReachabilityReleaseCallback(const void *info) {
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
     [request setHTTPMethod:method];
     [request setAllHTTPHeaderFields:self.defaultHeaders];
+
+#ifdef _SYSTEMCONFIGURATION_H
+    if (self.automaticallySetCachePolicyFromNetworkReachabilityStatus && self.networkReachabilityStatus == AFNetworkReachabilityStatusNotReachable) {
+        [request setCachePolicy:NSURLRequestReturnCacheDataDontLoad];
+    }
+#endif
 
     if (parameters) {
         if ([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"]) {
